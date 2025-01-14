@@ -1,7 +1,8 @@
 import { Tinctures } from "./tinctures.mjs";
+import {Objects} from "./objects.mjs";
+import { colors, furs, ordinaries, treatments } from "./tokens.mjs";
 
 export class BlazonParser {
-    #tokens = [];
     #input = "";
     #index = 0;
 
@@ -9,9 +10,17 @@ export class BlazonParser {
         // step 1: fold accents and lowercase
         const blazon = input.normalize("NFD").replace(/\p{Diacritic}/gu, "").toLowerCase();
         this.#input = blazon;
-        this.#tokens = blazon.split(' ');
         const field = this.matchField();
-        return {field: field};
+        // now we look for zero or more objects
+        const objects = []
+        while (this.#index < this.#input.length)
+        {
+            const o = this.matchOrdinary();
+            if(o != null)
+                objects.push(o);
+            else break;
+        }
+        return {field: field, objects: objects};
     }
 
     matchField() {
@@ -21,13 +30,53 @@ export class BlazonParser {
     }
 
     matchTincture() {
-        // TODO treatments
-        //  C = color or fur
-        // can be:
-        //  treatment C C
-        //  treatment C (if treatment takes only one color)
-        //  C treatment (if treatment takes only one color)
-        //  C treatment C
+        const treament = this.#matchTreatment();
+        if(treament != null)
+        {
+            // we need to check for color or fur
+            const a = this.matchColorOrFur();
+            if(a != null)
+            {
+                //  treatment C (if treatment takes only one color)
+                treament.first = a;
+                // possibly twice
+                const b = this.matchColorOrFur();
+                //  treatment C C
+                if (b != null) {
+                    treament.second = b;
+                }
+            }
+            return treament;
+        }
+
+        const base = this.matchColorOrFur();
+        if(base != null) {
+            const treament = this.#matchTreatment();
+            if(treament != null)
+            {
+                //  C treatment (if treatment takes only one color)
+                treament.first = base;
+                // possibly twice
+                const b = this.matchColorOrFur();
+                //  C treatment C
+                if (b != null) {
+                    treament.second = b;
+                }
+                return treament;
+            }
+        }
+
+        return base;
+    }
+
+    #matchTreatment() {
+        const m = this.matchCategory(treatments);
+        if(m === null) return null;
+        return {type: Tinctures.TREATMENT, name: m};
+    }
+
+    matchColorOrFur()
+    {
         return this.#matchColor() || this.#matchFur();
     }
 
@@ -41,6 +90,33 @@ export class BlazonParser {
         const m = this.matchCategory(colors);
         if(m === null) return null;
         return {type: Tinctures.COLOR, name: m};
+    }
+
+    matchObject() {
+        return this.matchOrdinary();
+    }
+
+    matchOrdinary() {
+        // might have a number
+        // might have a prefix
+        const m = this.matchCategory(ordinaries);
+        if(m === null) return null;
+        const ord = {type: Objects.ORDINARY, name: m};
+        // might have some modifiers
+        // should have a tincture
+        const t = this.matchTincture();
+        if (t != null)
+            ord.tincture = t;
+        return ord;
+    }
+
+    skipWS() {
+        const r = /\s+/y;
+        r.lastIndex = this.#index;
+        if(r.exec(this.#input))
+        {
+            this.#index = r.lastIndex;
+        }
     }
 
     matchCategory(category) {
@@ -61,33 +137,7 @@ export class BlazonParser {
             }
         }
         this.#index = longest;
+        if(matched_value != null) this.skipWS();
         return matched_value;
     }
 }
-
-const colors = [
-    {regex: /az(ure)?/, val: "azure"},
-    {regex: /or/, val: "or"},
-    {regex: /d or/, val: "or"},
-    {regex: /orange/, val: "orange"},
-    {regex: /vert|sinople/, val: "vert"},
-    {regex: /gui?(les)?/, val: "gules"},
-    {regex: /arg(ent)?/, val: "argent"},
-    {regex: /sa(ble)?/, val: "sable"},
-    {regex: /purp(le|ure)/, val: "purpure"},
-    {regex: /murrey/, val: "murrey"},
-    {regex: /sanguine/, val: "sanguine"},
-    {regex: /carnation/, val: "carnation"},
-    {regex: /brunatre/, val: "brunatre"},
-    {regex: /rose/, val: "rose"},
-    {regex: /buff/, val: "buff"},
-]
-
-const furs = [
-    {regex: /ermine/, val: "ermine"},
-]
-
-// shield = quartered | halved | simple
-// simple = tincture object*
-// tincture = color | fur | treatment
-// object = ordinary | charge

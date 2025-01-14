@@ -69,3 +69,24 @@ export const FurMap = {
         `
     }
 }
+
+// TODO: mark treaments that only take one color
+// * bezanty
+// * hurty
+// * platy
+// * guzy
+// * pommy
+// * torty
+export const TreatmentMap = {
+    gingham: {
+        width: 200,
+        height: 200,
+        offset: 50,
+        pattern: `
+        <g class="treatment">
+            <path d="M 0,0 H 100 V 100 H 0 Z" />
+            <path style="opacity:0.5" d="M 100,0 H 200 V 100 H 100 Z" />
+            <path style="opacity:0.5" d="M 0,100 H 100 V 200 H 0 Z" />
+        </g>`
+    }
+}
