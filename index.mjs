@@ -2,7 +2,6 @@ import { ShieldBuilder } from "./builder.mjs";
 import { BlazonParser } from "./parser.mjs";
 
 
-//const input = "gules bend azure";
 const input = "rose gingham az bend ermine";
 
 const parser = new BlazonParser();

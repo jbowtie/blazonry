@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Build a shield</title>
+        <script type="module">
+            import { BlazonParser } from "./parser.mjs";
+            import { ShieldBuilder } from "./builder.mjs";
+            document.querySelector("button").addEventListener("click", (ev) => {
+                const i = document.querySelector("#blazon").value;
+                const p = new BlazonParser();
+                const instructions = p.parse(i);
+                const shield = new ShieldBuilder();
+                document.querySelector(".instructions").innerText = JSON.stringify(instructions, null, "  ");
+                document.querySelector(".shield").innerHTML = "";
+                const svg = shield.draw(instructions);
+                document.querySelector(".shield").innerHTML = svg;
+            });
+        </script>
+        <style>
+            .shield {background: #ccc;padding: 1rem; width:50%;max-width:500px;}
+            pre {font-family: Courier;background: #f4f4f4;border: solid 1px #e1e1e1;display:block;width: 500px;min-height:10em;}
+        </style>
+    </head>
+    <body>
+        <h1>Create Shield</h1>
+        <p>This is a simple way to interactively test the program; enter a blazon below and the shield will be drawn if possible.</p>
+        <label for="blazon">Blazon:</label>
+        <input type="text" id="blazon" />
+        <button>Draw</button>
+        <div style="display:flex;gap: 1em;">
+        <pre class="instructions"></pre>
+        <div class="shield"></div>
+        </div>
+    </body>
+</html>

@@ -1,13 +1,20 @@
 import { Tinctures, ColorMap, FurMap, TreatmentMap } from "./tinctures.mjs";
-import { Ordinaries } from "./objects.mjs";
+import { Divisions, Ordinaries } from "./objects.mjs";
 // shield shapes
 const heater = "m 0,0 v 800 c -2.5063876,43.11115 1.2341419,84.33503 21.489586,125.13639 20.255443,40.80137 53.477613,79.98631 98.039434,115.63581 44.56181,35.6494 100.44867,67.7517 164.92346,94.7345 64.47479,26.9828 137.51639,48.8374 215.54752,64.4933 78.03113,-15.6559 151.07273,-37.5105 215.54752,-64.4933 64.47479,-26.9828 120.36165,-59.0851 164.92346,-94.7345 44.56182,-35.6495 77.78399,-74.83444 98.03943,-115.63581 C 998.76586,884.33503 1000.1453,841.93063 1000,800 V 0 Z";
 
+// Converts a set of instructions produced by the parser into SVG
 export class ShieldBuilder {
     #defs = new Map();
 
     handleField(field) {
+        // may need to be adjusted for other shield shapes
         const area = `<rect x='0' y='0' width='1000' height='1200'><title>Field</title></rect>`
+        // handle a division
+        if (field.division) {
+            return this.applyDivision(field.division, area);
+        }
+        // no division? handle the tincture
         if (field.tincture) {
             return this.applyTincture(field.tincture, area);
         }
@@ -63,6 +70,16 @@ export class ShieldBuilder {
         }
     }
 
+    applyDivision(division, target) {
+        const def = Divisions[division.name];
+        // TODO: handle countercharge
+        // first area is always the base
+        const div1 = this.applyTincture(division.tinctures[0], target)
+        // TODO: handle more than two areas
+        const div2 = this.applyTincture(division.tinctures[1], def.path)
+        return `<g stroke-width="4" stroke="none">${div1}${div2}</g>`
+    }
+
 
     draw(instructions) {
         // mask for shield shape
@@ -84,7 +101,6 @@ export class ShieldBuilder {
             xmlns:cc="http://creativecommons.org/ns#"
             xmlns:dc="http://purl.org/dc/elements/1.1/" 
             preserveAspectRatio="xMidYMid meet"
-            height="1200" width="1000"
             viewBox="0,0,1000,1200">
             <defs>${mask}${defs}</defs>
             <g mask="url(#heater-shield)">

@@ -1,6 +1,6 @@
 import { Tinctures } from "./tinctures.mjs";
 import {Objects} from "./objects.mjs";
-import { colors, furs, ordinaries, treatments } from "./tokens.mjs";
+import { colors, furs, ordinaries, treatments, divisions } from "./tokens.mjs";
 
 export class BlazonParser {
     #input = "";
@@ -24,6 +24,10 @@ export class BlazonParser {
     }
 
     matchField() {
+        const d = this.matchDivision();
+        if(d != null) {
+            return {division: d};
+        }
         const m = this.matchTincture();
         if(m === null) return null;
         return {tincture: m};
@@ -69,6 +73,23 @@ export class BlazonParser {
         return base;
     }
 
+    matchDivision() {
+        const d = this.matchCategory(divisions);
+        if(d === null) return null;
+        const division = {type: Objects.DIVISION, name: d, tinctures: []};
+        // may have an orientation (ie, dexter, sinister)
+        // may have a line type or other modifications
+        // a division will have at least 2 tinctures
+        let t1 = this.matchTincture();
+        while (t1 != null) {
+            division.tinctures.push(t1);
+            this.skipAND();
+            t1 = this.matchTincture();
+        }
+
+        return division;
+    }
+
     #matchTreatment() {
         const m = this.matchCategory(treatments);
         if(m === null) return null;
@@ -108,6 +129,15 @@ export class BlazonParser {
         if (t != null)
             ord.tincture = t;
         return ord;
+    }
+
+    skipAND() {
+        const r = /(and|&|also)\s+/y;
+        r.lastIndex = this.#index;
+        if(r.exec(this.#input))
+        {
+            this.#index = r.lastIndex;
+        }
     }
 
     skipWS() {
