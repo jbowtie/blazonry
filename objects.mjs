@@ -42,3 +42,10 @@ export const Divisions = {
     path: `<path fill-rule="evenodd " d="M 500 500 L 500,-1500 L 1914.2135623731,-914.2135623731 L 500,500 ZM 500 500 L 2500,500 L 1914.2135623731,1914.2135623731 L 500,500 ZM 500 500 L 500,2500 L -914.21356237309,1914.2135623731 L 500,500 ZM 500 500 L -1500,500 L -914.2135623731,-914.21356237309 L 500,500 Z"/>`,
   },
 };
+
+// most charges will be sourced from an svg file
+// some very simple charges will just be a path
+export const Charges = {
+  lion: { file: 'charges/lion.svg' },
+  gorgon_head: { file: 'charges/gorgon-head.svg' },
+}

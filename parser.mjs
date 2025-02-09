@@ -1,6 +1,6 @@
 import { Tinctures } from "./tinctures.mjs";
 import {Objects} from "./objects.mjs";
-import { colors, furs, ordinaries, treatments, divisions } from "./tokens.mjs";
+import { colors, furs, ordinaries, treatments, divisions, charges } from "./tokens.mjs";
 
 export class BlazonParser {
     #input = "";
@@ -15,7 +15,7 @@ export class BlazonParser {
         const objects = []
         while (this.#index < this.#input.length)
         {
-            const o = this.matchOrdinary();
+            const o = this.matchObject();
             if(o != null)
                 objects.push(o);
             else break;
@@ -114,7 +114,7 @@ export class BlazonParser {
     }
 
     matchObject() {
-        return this.matchOrdinary();
+        return this.matchOrdinary() || this.matchCharge();
     }
 
     matchOrdinary() {
@@ -124,11 +124,29 @@ export class BlazonParser {
         if(m === null) return null;
         const ord = {type: Objects.ORDINARY, name: m};
         // might have some modifiers
+        // ie, voided, cotticed, line variation
         // should have a tincture
         const t = this.matchTincture();
         if (t != null)
             ord.tincture = t;
         return ord;
+    }
+
+    matchCharge() {
+        // might have an arrangement/position
+        // number if any
+        // prefix if any
+        // actual charge
+        const m = this.matchCategory(charges);
+        if(m === null) return null;
+        const charge = {type: Objects.CHARGE, name: m};
+        // might be arrangement/position following charge name
+        // tincture
+        const t = this.matchTincture();
+        if (t != null)
+            charge.tincture = t;
+        //may be associated charges
+        return charge;
     }
 
     skipAND() {

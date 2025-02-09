@@ -7,14 +7,14 @@
         <script type="module">
             import { BlazonParser } from "./parser.mjs";
             import { ShieldBuilder } from "./builder.mjs";
-            document.querySelector("button").addEventListener("click", (ev) => {
+            document.querySelector("button").addEventListener("click", async (ev) => {
                 const i = document.querySelector("#blazon").value;
                 const p = new BlazonParser();
                 const instructions = p.parse(i);
                 const shield = new ShieldBuilder();
                 document.querySelector(".instructions").innerText = JSON.stringify(instructions, null, "  ");
                 document.querySelector(".shield").innerHTML = "";
-                const svg = shield.draw(instructions);
+                const svg = await shield.draw(instructions);
                 document.querySelector(".shield").innerHTML = svg;
             });
         </script>

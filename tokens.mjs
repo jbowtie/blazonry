@@ -51,3 +51,8 @@ export const divisions = [
     //{regex: /(?:part(y|ed)\s+)?per pile/, val: "per_pile"},
     //{regex: /(?:part(y|ed)\s+)?per pall/, val: "per_pall"},
 ]
+
+export const charges = [
+    {regex: /lions?/, val: "lion"},
+    {regex: /gorgons? heads?/, val: "gorgon_head"},
+]
