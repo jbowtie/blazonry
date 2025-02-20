@@ -27,13 +27,41 @@ export class ShieldBuilder {
         return `<g>${x}</g>`
     }
 
+    // async loadChargeDef(key, chargeDef) {
+    //     // read in the XML
+    //     const data = await fetch(chargeDef.file).then(r => r.text());
+    //     // get the width and height
+    //     // TODO: get any license metadata
+    //     var parser = new DOMParser();
+    //     var doc = parser.parseFromString(data, "image/svg+xml");
+    //     const w = doc.documentElement.width.baseVal.value;
+    //     const h = doc.documentElement.height.baseVal.value;
+    //     this.#defs.set(key, definition);
+    // }
     async handleCharge(charge) {
         // may need to calculate a key from name + modifiers
+        //const key = charge.name;
         const chargeDef = Charges[charge.name];
         const data = await fetch(chargeDef.file).then(r => r.text());
-        // TODO: calculate the position correctly
+        // TODO: may want to scale a treatment or fur
         const tinted = this.applyTincture(charge.tincture, data);
-        return `<g transform='translate(100,100) scale(2, 2.3809523809524)'>${tinted}</g>`;
+        // TODO: calculate the transform based on position and scale
+        const t = this.calculateChargePosition(data, {x:500, y:500}, {x: 200, y: 200})
+        return `<g transform='translate(${t.posX},${t.posY}) scale(${t.scaleX}, ${t.scaleY})'>${tinted}</g>`;
+    }
+
+    calculateChargePosition(charge, position, bounds) {
+        // position is where we want to place the charge
+        var parser = new DOMParser();
+        var doc = parser.parseFromString(charge, "image/svg+xml");
+        const w = doc.documentElement.width.baseVal.value;
+        const h = doc.documentElement.height.baseVal.value;
+        const scale = {x: w / bounds.x, y: h / bounds.y};
+        const resized = {w: w * scale.x, h: h * scale.y};
+        const midpoint = {x: resized.w / 2, y: resized.h / 2};
+        const pos = {x: position.x - midpoint.x, y: position.y - midpoint.y};
+
+        return {posX: pos.x, posY: pos.y, scaleX: scale.x, scaleY: scale.y};
     }
 
     async handleObject(o) {
