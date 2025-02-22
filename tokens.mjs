@@ -18,10 +18,17 @@ export const colors = [
 
 export const furs = [
     {regex: /ermine/, val: "ermine"},
+    {regex: /ermines/, val: "counter_ermine"},
+    {regex: /counter ermine/, val: "counter_ermine"},
+    {regex: /erminois/, val: "erminois"},
+    {regex: /pean/, val: "pean"},
+    {regex: /vair/, val: "vair"},
 ]
 
 export const treatments = [
     {regex: /gingham/, val: "gingham"},
+    {regex: /(checky|cheque?y|checkered)/, val: "checky"},
+    {regex: /fretty/, val: "fretty"},
 ]
 
 export const ordinaries = [
@@ -46,7 +53,11 @@ export const divisions = [
     //{regex: /(?:part(y|ed)\s+)?per chief/, val: "per_chief"},
     {regex: /(?:part(y|ed)\s+)?per bend/, val: "per_bend"},
     {regex: /(?:part(y|ed)\s+)?per saltire/, val: "per_saltire"},
+    {regex: /quarterly quartered/, val: "gyronny"},
     {regex: /(?:part(y|ed)\s+)?(?:per\s+)?g(i|y)ronny/, val: "gyronny"},
+    {regex: /barry/, val: "barry"},
+    {regex: /bendy/, val: "bendy"},
+    {regex: /paly/, val: "paly"},
     //{regex: /(?:part(y|ed)\s+)?per chevron/, val: "per_chevron"},
     //{regex: /(?:part(y|ed)\s+)?per pile/, val: "per_pile"},
     //{regex: /(?:part(y|ed)\s+)?per pall/, val: "per_pall"},
@@ -55,4 +66,29 @@ export const divisions = [
 export const charges = [
     {regex: /lions?/, val: "lion"},
     {regex: /gorgons? heads?/, val: "gorgon_head"},
+]
+
+// arbitrary cut-off at 12 for now
+// 
+export const numbers = [
+    {regex: /a|an|the|some/, val: 1},
+    {regex: /1|one/, val: 1},
+    {regex: /2|two/, val: 2},
+    {regex: /3|three/, val: 3},
+    {regex: /4|four/, val: 4},
+    {regex: /5|five/, val: 5},
+    {regex: /6|six/, val: 6},
+    {regex: /7|seven/, val: 7},
+    {regex: /8|eight/, val: 8},
+    {regex: /9|nine/, val: 9},
+    {regex: /10|ten/, val: 10},
+    {regex: /11|eleven/, val: 11},
+    {regex: /12|twelve/, val: 12},
+]
+
+export const orientation = [
+    {regex: /sinister/, val: "sinister"},
+    {regex: /dexter/, val: "dexter"},
+    {regex: /reversed/, val: "reversed"},
+    {regex: /inverted/, val: "inverted"},
 ]

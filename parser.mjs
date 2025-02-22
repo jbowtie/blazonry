@@ -1,6 +1,6 @@
 import { Tinctures } from "./tinctures.mjs";
 import {Objects} from "./objects.mjs";
-import { colors, furs, ordinaries, treatments, divisions, charges } from "./tokens.mjs";
+import { colors, furs, ordinaries, treatments, divisions, charges, numbers , orientation} from "./tokens.mjs";
 
 export class BlazonParser {
     #input = "";
@@ -43,6 +43,7 @@ export class BlazonParser {
             {
                 //  treatment C (if treatment takes only one color)
                 treament.first = a;
+                this.skipAND();
                 // possibly twice
                 const b = this.matchColorOrFur();
                 //  treatment C C
@@ -78,7 +79,10 @@ export class BlazonParser {
         if(d === null) return null;
         const division = {type: Objects.DIVISION, name: d, tinctures: []};
         // may have an orientation (ie, dexter, sinister)
+        const o = this.matchCategory(orientation);
+        if(o) division.orientation = o;
         // may have a line type or other modifications
+        // TODO
         // a division will have at least 2 tinctures
         let t1 = this.matchTincture();
         while (t1 != null) {
@@ -119,10 +123,11 @@ export class BlazonParser {
 
     matchOrdinary() {
         // might have a number
-        // might have a prefix
+        const n = this.matchCategory(numbers);
+        // TODO: might have a prefix
         const m = this.matchCategory(ordinaries);
         if(m === null) return null;
-        const ord = {type: Objects.ORDINARY, name: m};
+        const ord = {type: Objects.ORDINARY, name: m, number: n};
         // might have some modifiers
         // ie, voided, cotticed, line variation
         // should have a tincture
@@ -135,11 +140,12 @@ export class BlazonParser {
     matchCharge() {
         // might have an arrangement/position
         // number if any
+        const n = this.matchCategory(numbers);
         // prefix if any
         // actual charge
         const m = this.matchCategory(charges);
         if(m === null) return null;
-        const charge = {type: Objects.CHARGE, name: m};
+        const charge = {type: Objects.CHARGE, name: m, number: n ?? 1};
         // might be arrangement/position following charge name
         // tincture
         const t = this.matchTincture();
@@ -167,6 +173,9 @@ export class BlazonParser {
         }
     }
 
+    // this is the core of our parsing approach
+    // find the longest regex match in this category
+    // using the 'sticky' modifier to only advance on a match
     matchCategory(category) {
         let longest = this.#index;
         let matched_value = null;

@@ -7,8 +7,7 @@ const input = "rose gingham az bend ermine";
 const parser = new BlazonParser();
 const instructions = parser.parse(input);
 
-// step 3: draw the shield
 const shield = new ShieldBuilder();
-const svg = shield.draw(instructions);
+const svg = await shield.draw(instructions);
 
 process.stdout.write(svg);

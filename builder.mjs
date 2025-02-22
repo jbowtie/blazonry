@@ -121,11 +121,19 @@ export class ShieldBuilder {
 
     applyDivision(division, target) {
         const def = Divisions[division.name];
+        // standard path is 'dexter'
+        let path = def.path;
+        // if we support sinister, use that path instead
+        if(division.orientation == 'sinister')
+        {
+            if (def.sinister)
+                path = def.sinister;
+        }
         // TODO: handle countercharge
         // first area is always the base
         const div1 = this.applyTincture(division.tinctures[0], target)
         // TODO: handle more than two areas
-        const div2 = this.applyTincture(division.tinctures[1], def.path)
+        const div2 = this.applyTincture(division.tinctures[1], path)
         return `<g stroke-width="4" stroke="none">${div1}${div2}</g>`
     }
 
