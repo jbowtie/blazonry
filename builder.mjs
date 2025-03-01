@@ -6,10 +6,11 @@ const heater = "m 0,0 v 800 c -2.5063876,43.11115 1.2341419,84.33503 21.489586,1
 // Converts a set of instructions produced by the parser into SVG
 export class ShieldBuilder {
     #defs = new Map();
+    #instructions = null;
 
     handleField(field) {
         // may need to be adjusted for other shield shapes
-        const area = `<rect x='0' y='0' width='1000' height='1200'><title>Field</title></rect>`
+        const area = this.#instructions.area;
         // handle a division
         if (field.division) {
             return this.applyDivision(field.division, area);
@@ -78,36 +79,49 @@ export class ShieldBuilder {
 
     applyTincture (tincture, target) {
         switch (tincture.type) {
+            case Tinctures.COUNTER:
+                const field = this.#instructions.field;
+                // create a mask from the target
+                const mask_key = `counter-${this.#defs.size}`;
+                this.#defs.set(mask_key, `<mask id="${mask_key}"><g fill="#fff">${target}</g></mask>`)
+                if(field.division) {
+                    // recreate the division, but swap the colors
+                    const layer = this.applyDivision(field.division, this.#instructions.area, true);
+                    return `<g mask="url(#${mask_key})">${layer}</g>`;
+                }
+                if(field.tincture.type == Tinctures.TREATMENT) {
+                    // get or create the counter treatment
+                    const counterTreatment = `${field.tincture.name}-counter`;
+                    if(!this.#defs.has(counterTreatment)) {
+                        const pattern = this.#makeTreatmentPattern(field.tincture, counterTreatment, true);
+                        this.#defs.set(counterTreatment, pattern);
+                    }
+                    return `<g mask="url(#${mask_key})"><g fill="url(#${counterTreatment})">${this.#instructions.area}</g></g>`;
+                }
+                if(field.tincture.type == Tinctures.FUR) {
+                    // get or create the counter fur
+                    const counterFur = `${field.tincture.name}-counter`;
+                    if(!this.#defs.has(counterFur)) {
+                        const pattern = this.#makeFurPattern(field.tincture, counterFur, true);
+                        this.#defs.set(counterFur, pattern);
+                    }
+                    return `<g mask="url(#${mask_key})"><g fill="url(#${counterFur})">${this.#instructions.area}</g></g>`;
+                }
+                console.error("Cannot apply counterchange");
+                return `<g fill="${ColorMap.error}">${target}</g>`;
+
             case Tinctures.TREATMENT:
                 let treatKey = tincture.name;
                 if(!this.#defs.has(treatKey)) {
-                    const treatment = TreatmentMap[tincture.name];
-                    const pattern_body = treatment.pattern;
-                    // base rectangle + colored treatment
-                    const area = `<rect x='0' y='0' width='${treatment.width}' height='${treatment.height}' />`
-                    const base = this.applyTincture(tincture.first, area);
-                    const overlay = this.applyTincture(tincture.second, pattern_body);
-                    // TODO: calculate offset to make treatment symmetrical
-                    const offset = treatment.offset ?? 0;
-                    const pattern = `<pattern id="${treatKey}" x="${offset}" y="0" width="${treatment.width}" height="${treatment.height}" patternContentUnits="userSpaceOnUse" patternUnits="userSpaceOnUse">
-                    <g class="treatment">${base}<g stroke-width="2" stroke="none">${overlay}</g></g>
-                    </pattern>`
+                    const pattern = this.#makeTreatmentPattern(tincture, treatKey);
                     this.#defs.set(treatKey, pattern);
                 }
                 return `<g fill="url(#${treatKey})">${target}</g>`;
 
             case Tinctures.FUR:
-                // in future want to construct from variable parts
-                // so 'ermine' is distinct from 'ermine-inverted-countercharged'
                 let key = tincture.name;
                 if(!this.#defs.has(key)) {
-                    const fur = FurMap[tincture.name];
-                    // TODO: swap if countercharged
-                    const pattern_body = fur.pattern.replaceAll("%FOREGROUND%", fur.foreground).replaceAll("%BACKGROUND%", fur.background);
-                    // TODO: invert if needed
-                    const pattern = `<pattern id="${key}" width="${fur.width}" height="${fur.height}" x="0" y="0" patternContentUnits="userSpaceOnUse" patternUnits="userSpaceOnUse">
-                        <g class="fur">${pattern_body}</g>
-                    </pattern>`
+                    const pattern = this.#makeFurPattern(tincture, key);
                     this.#defs.set(key, pattern);
                 }
                 return `<g fill="url(#${key})">${target}</g>`;
@@ -119,28 +133,70 @@ export class ShieldBuilder {
         }
     }
 
-    applyDivision(division, target) {
+    #makeTreatmentPattern(tincture, treatKey, swap_colours = false) {
+        const treatment = TreatmentMap[tincture.name];
+        const pattern_body = treatment.pattern;
+        // base rectangle + colored treatment
+        const area = `<rect x='0' y='0' width='${treatment.width}' height='${treatment.height}' />`
+        const base = this.applyTincture(swap_colours ? tincture.second : tincture.first, area);
+        const overlay = this.applyTincture(swap_colours ? tincture.first : tincture.second, pattern_body);
+        // TODO: calculate offset to make treatment symmetrical
+        const offset = treatment.offset ?? 0;
+        const pattern = `<pattern id="${treatKey}" x="${offset}" y="0" width="${treatment.width}" height="${treatment.height}" patternContentUnits="userSpaceOnUse" patternUnits="userSpaceOnUse">
+        <g class="treatment">${base}<g stroke-width="2" stroke="none">${overlay}</g></g>
+        </pattern>`
+        return pattern;
+    }
+
+    #makeFurPattern(tincture, key, swap_colours = false) {
+        const fur = FurMap[tincture.name];
+        let pattern_body = fur.pattern.replaceAll("%FOREGROUND%", fur.foreground).replaceAll("%BACKGROUND%", fur.background);
+        if(swap_colours) {
+            pattern_body = fur.pattern.replaceAll("%FOREGROUND%", fur.background).replaceAll("%BACKGROUND%", fur.foreground);
+        }
+        // TODO: invert if needed
+        const pattern = `<pattern id="${key}" width="${fur.width}" height="${fur.height}" x="0" y="0" patternContentUnits="userSpaceOnUse" patternUnits="userSpaceOnUse">
+            <g class="fur">${pattern_body}</g>
+        </pattern>`
+        return pattern;
+    }
+
+    applyDivision(division, target, swap_colours = false) {
         const def = Divisions[division.name];
         // standard path is 'dexter'
         let path = def.path;
         // if we support sinister, use that path instead
-        if(division.orientation == 'sinister')
-        {
+        if(division.orientation == 'sinister') {
             if (def.sinister)
                 path = def.sinister;
         }
         // TODO: handle countercharge
+        // a countercharged division cannot be the field itself
+        // but can be overlaid on the field effectively like an ordinary
+
+        // normally the tinctures are used as ordered
+        let tinctures = division.tinctures;
+        // if we're being used as a mask we might need to swap the colours
+        if (swap_colours) {
+            const old_first = tinctures.shift();
+            tinctures.push(old_first);
+        }
         // first area is always the base
-        const div1 = this.applyTincture(division.tinctures[0], target)
+        const div1 = this.applyTincture(tinctures[0], target)
         // TODO: handle more than two areas
-        const div2 = this.applyTincture(division.tinctures[1], path)
+        const div2 = this.applyTincture(tinctures[1], path)
         return `<g stroke-width="4" stroke="none">${div1}${div2}</g>`
     }
 
 
     async draw(instructions) {
+        // reset internal state
+        this.#defs = new Map();
+        // allows us to resolve references
+        this.#instructions = instructions;
         // mask for shield shape
         const mask = `<mask id="heater-shield"><path fill="#FFFF" d="${heater}"/></mask>`
+        instructions.area = `<rect x='0' y='0' width='1000' height='1200'><title>Field</title></rect>`
         // construct the field
         let body = this.handleField(instructions.field);
         // process ordinaries and charges

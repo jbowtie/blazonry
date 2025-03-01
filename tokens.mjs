@@ -31,6 +31,15 @@ export const treatments = [
     {regex: /fretty/, val: "fretty"},
 ]
 
+export const counterchanged = [
+    {regex: /counter cha[nr]ged?/, val: "counterchanged"},
+    {regex: /countercha[nr]ged?/, val: "counterchanged"},
+    {regex: /countercoloured/, val: "counterchanged"},
+    {regex: /interchanged?/, val: "counterchanged"},
+    {regex: /transmuted/, val: "counterchanged"},
+    {regex: /de l un en l autre/, val: "counterchanged"},
+]
+
 export const ordinaries = [
     {regex:/bars?/, val: "bar"},
     {regex:/bends?/, val: "bend"},
@@ -69,7 +78,7 @@ export const charges = [
 ]
 
 // arbitrary cut-off at 12 for now
-// 
+// DrawShield goes up to 64!
 export const numbers = [
     {regex: /a|an|the|some/, val: 1},
     {regex: /1|one/, val: 1},

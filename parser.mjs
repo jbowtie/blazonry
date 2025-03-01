@@ -1,6 +1,6 @@
 import { Tinctures } from "./tinctures.mjs";
 import {Objects} from "./objects.mjs";
-import { colors, furs, ordinaries, treatments, divisions, charges, numbers , orientation} from "./tokens.mjs";
+import { colors, furs, ordinaries, treatments, divisions, charges, numbers , orientation, counterchanged} from "./tokens.mjs";
 
 export class BlazonParser {
     #input = "";
@@ -54,6 +54,9 @@ export class BlazonParser {
             return treament;
         }
 
+        const counter = this.#matchCounterchanged();
+        if (counter != null) return counter;
+
         const base = this.matchColorOrFur();
         if(base != null) {
             const treament = this.#matchTreatment();
@@ -104,6 +107,13 @@ export class BlazonParser {
     {
         return this.#matchColor() || this.#matchFur();
     }
+    
+    #matchCounterchanged()
+    {
+        const m = this.matchCategory(counterchanged)
+        if(m === null) return null;
+        return {type: Tinctures.COUNTER, name: m};
+    }
 
     #matchFur() {
         const m = this.matchCategory(furs);
@@ -118,6 +128,7 @@ export class BlazonParser {
     }
 
     matchObject() {
+        // TODO: could also have a counterchanged division
         return this.matchOrdinary() || this.matchCharge();
     }
 

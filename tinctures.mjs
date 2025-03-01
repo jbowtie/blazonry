@@ -1,7 +1,8 @@
 export const Tinctures = {
     COLOR: 0,
     FUR: 1,
-    TREATMENT: 2
+    TREATMENT: 2,
+    COUNTER: 3
 };
 
 // map color names to sRGB values
