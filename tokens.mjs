@@ -42,6 +42,8 @@ export const counterchanged = [
 
 export const ordinaries = [
     {regex:/bars?/, val: "bar"},
+    {regex:/base/, val: "base"},
+    {regex:/plaine? point/, val: "base"},
     {regex:/bends?/, val: "bend"},
     {regex:/fesse?/, val: "fess"},
     {regex:/chief/, val: "chief"},
@@ -73,8 +75,29 @@ export const divisions = [
 ]
 
 export const charges = [
-    {regex: /lions?/, val: "lion"},
+    {regex: /ants?/, val: "ant"},
+    {regex: /bees?/, val: "bee"},
+    {regex: /(sanglier|boar|grice)s?/, val: "boar"},
+    {regex: /dragons?/, val: "dragon"},
+    {regex: /eagles?/, val: "eagle"},
+    {regex: /foxe?s?/, val: "fox"},
     {regex: /gorgons? heads?/, val: "gorgon_head"},
+    {regex: /(griff[oi]n|gryphon)s?/, val: "griffin"},
+    {regex: /harp(y|ie)s?/, val: "harpy"},
+    {regex: /lions?/, val: "lion"},
+    {regex: /man t[iy]gers?/, val: "manticore"},
+    {regex: /manticores?/, val: "manticore"},
+    {regex: /mermaids?/, val: "mermaid"},
+    {regex: /sirens?/, val: "mermaid"},
+    {regex: /merm[ae]n?/, val: "merman"},
+    {regex: /pegas(i|us|uses)?/, val: "pegasus"},
+    {regex: /spiders?/, val: "spider"},
+    {regex: /(roe)?bucks?/, val: "stag"},
+    {regex: /harts?/, val: "stag"},
+    {regex: /stags?/, val: "stag"},
+    {regex: /unicorns?/, val: "unicorn"},
+    {regex: /wol(f|ve)s?/, val: "wolf"},
+    {regex: /w[yi]vern?s?/, val: "wyvern"},
 ]
 
 // arbitrary cut-off at 12 for now

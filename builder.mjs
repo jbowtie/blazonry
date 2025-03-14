@@ -24,7 +24,14 @@ export class ShieldBuilder {
 
     handleOrdinary(ordinary) {
         const ord = Ordinaries[ordinary.name];
-        const x = this.applyTincture(ordinary.tincture, ord.path);
+        // standard path is 'dexter'
+        let path = ord.path;
+        // if we support sinister, use that path instead
+        if(ordinary.orientation == 'sinister') {
+            if (ord.sinister)
+                path = ord.sinister;
+        }
+        const x = this.applyTincture(ordinary.tincture, path);
         return `<g>${x}</g>`
     }
 
@@ -47,7 +54,9 @@ export class ShieldBuilder {
         // TODO: may want to scale a treatment or fur
         const tinted = this.applyTincture(charge.tincture, data);
         // TODO: calculate the transform based on position and scale
-        const t = this.calculateChargePosition(data, {x:500, y:500}, {x: 200, y: 200})
+        // numbers here use the whole shield for the bounding box and a standard center point
+        const t = this.calculateChargePosition(data, {x:500, y:600}, {x: 1000*0.8, y: 1200*0.8})
+// WOLF: translate(100,401.86914612447) scale(2.2594066583472, 2.7112879900166) 
         return `<g transform='translate(${t.posX},${t.posY}) scale(${t.scaleX}, ${t.scaleY})'>${tinted}</g>`;
     }
 
@@ -57,11 +66,11 @@ export class ShieldBuilder {
         var doc = parser.parseFromString(charge, "image/svg+xml");
         const w = doc.documentElement.width.baseVal.value;
         const h = doc.documentElement.height.baseVal.value;
-        const scale = {x: w / bounds.x, y: h / bounds.y};
+        const scale = {x: bounds.x / w, y: bounds.y / h};
+        scale.x = scale.y = Math.min (scale.x, scale.y);
         const resized = {w: w * scale.x, h: h * scale.y};
         const midpoint = {x: resized.w / 2, y: resized.h / 2};
         const pos = {x: position.x - midpoint.x, y: position.y - midpoint.y};
-
         return {posX: pos.x, posY: pos.y, scaleX: scale.x, scaleY: scale.y};
     }
 

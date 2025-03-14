@@ -16,3 +16,11 @@ To run it locally, just run any static server - because Python is pre-installed 
 ```
 python3 -m http.server 7777 -d .
 ```
+
+There is also a very simple command line program in the `index.mjs` that will accept a blazon piped in via stdin and output the SVG.
+
+You can use it like so:
+
+```
+echo "azure bend argent" | node index.mjs > example.svg
+```

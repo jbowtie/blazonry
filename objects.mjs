@@ -5,8 +5,12 @@ export const Objects = {
 };
 
 export const Ordinaries = {
+  bar: {
+  path: `<path fill-rule="evenodd" d="M-100,400h1200 v200 h-1200.000 v-200.000 z" />`
+  },
   bend: {
     path: `<path fill-rule="evenodd" d="M-100,-100 l106.066,-106.066 l1200.000,1200.000 l-212.132,212.132 l-1200.000,-1200.000 l106.066,-106.066 z" />`,
+    sinister: `<path fill-rule="evenodd" d="M1100,-100 l106.066,106.066   l-1200.000,1200.000   l-212.132,-212.132   l1200.000,-1200.000   l106.066,106.066 z" />`,
   },
   fess: {
     path: `<path fill-rule="evenodd" d="M-100,320h1200 v360 h-1200.000 v-360.000 z" />`,
@@ -58,6 +62,29 @@ export const Divisions = {
 // most charges will be sourced from an svg file
 // some very simple charges will just be a path
 export const Charges = {
-  lion: { file: 'charges/lion.svg' },
+  ant: { file: 'charges/ant.svg' },
+  bee: { file: 'charges/bee.svg' },
+  boar: { file: 'charges/boar.svg' },
+  boar_head: { file: 'charges/boar-head.svg' },
+  dragon: { file: 'charges/dragon.svg' },
+  eagle: { file: 'charges/eagle.svg' },
+  eagle_head: { file: 'charges/eagle_head.svg' },
+  fox: { file: 'charges/fox.svg' },
+  fox_head: { file: 'charges/fox-head.svg' },
   gorgon_head: { file: 'charges/gorgon-head.svg' },
+  griffin: { file: 'charges/griffin.svg' },
+  griffin_head: { file: 'charges/griffin-head.svg' },
+  harpy: { file: 'charges/harpy.svg' },
+  lion: { file: 'charges/lion.svg' },
+  manticore: { file: 'charges/manticore.svg' },
+  mermaid: { file: 'charges/mermaid.svg' },
+  merman: { file: 'charges/merman.svg' },
+  pegasus: { file: 'charges/pegasus.svg' },
+  spider: { file: 'charges/spider.svg' },
+  stag: { file: 'charges/stag.svg' },
+  stag_head: { file: 'charges/stag-head.svg' },
+  unicorn: { file: 'charges/unicorn.svg' },
+  wolf: { file: 'charges/wolf.svg' },
+  wolf_head: { file: 'charges/wolf-head.svg' },
+  wyvern: { file: 'charges/wyvern.svg' },
 }

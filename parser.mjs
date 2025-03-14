@@ -7,7 +7,7 @@ export class BlazonParser {
     #index = 0;
 
     parse(input) {
-        // step 1: fold accents and lowercase
+        // fold accents and lowercase
         const blazon = input.normalize("NFD").replace(/\p{Diacritic}/gu, "").toLowerCase();
         this.#input = blazon;
         const field = this.matchField();
@@ -140,6 +140,12 @@ export class BlazonParser {
         if(m === null) return null;
         const ord = {type: Objects.ORDINARY, name: m, number: n};
         // might have some modifiers
+        const o = this.matchCategory(orientation);
+        if(o) {
+            ord.orientation = o;
+            // "bar sinister" is really a "bend sinister"
+            if (ord.name == "bar" && ord.orientation == "sinister") ord.name = "bend";
+        }
         // ie, voided, cotticed, line variation
         // should have a tincture
         const t = this.matchTincture();
