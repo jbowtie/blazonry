@@ -35,38 +35,46 @@ export class ShieldBuilder {
         return `<g>${x}</g>`
     }
 
-    // async loadChargeDef(key, chargeDef) {
-    //     // read in the XML
-    //     const data = await fetch(chargeDef.file).then(r => r.text());
-    //     // get the width and height
-    //     // TODO: get any license metadata
-    //     var parser = new DOMParser();
-    //     var doc = parser.parseFromString(data, "image/svg+xml");
-    //     const w = doc.documentElement.width.baseVal.value;
-    //     const h = doc.documentElement.height.baseVal.value;
-    //     this.#defs.set(key, definition);
-    // }
+    async loadChargeDef(chargeDef) {
+        // read in the XML
+        const data = await fetch(chargeDef.file).then(r => r.text());
+        // TODO: get any license metadata
+        //  we want to aggregate metadata in resulting SVG
+        var parser = new DOMParser();
+        var doc = parser.parseFromString(data, "image/svg+xml");
+        // get the width and height
+        // TODO: work out the w/h from the viewBox (see ant)
+        // TODO:   important when viewbox is offset (see gorgon head)
+        // TODO:   if w/h in percent make it % of viewbox
+        const w = doc.documentElement.width.baseVal.value;
+        const h = doc.documentElement.height.baseVal.value;
+        // discard the SVG element, we only want the children
+        const children = doc.documentElement.innerHTML;
+        return {data: children, width: w, height: h}
+    }
+
     async handleCharge(charge) {
         // may need to calculate a key from name + modifiers
         //const key = charge.name;
         const chargeDef = Charges[charge.name];
-        const data = await fetch(chargeDef.file).then(r => r.text());
-        // TODO: may want to scale a treatment or fur
-        const tinted = this.applyTincture(charge.tincture, data);
+        const chargeData = await this.loadChargeDef(chargeDef);
+        // TODO: find a way to set the stroke color based on tincture lightness
+        // TODO:   if we <use> the charge def then context-stroke is a possibility
         // TODO: calculate the transform based on position and scale
-        // numbers here use the whole shield for the bounding box and a standard center point
-        const t = this.calculateChargePosition(data, {x:500, y:600}, {x: 1000*0.8, y: 1200*0.8})
-// WOLF: translate(100,401.86914612447) scale(2.2594066583472, 2.7112879900166) 
-        return `<g transform='translate(${t.posX},${t.posY}) scale(${t.scaleX}, ${t.scaleY})'>${tinted}</g>`;
+        // numbers here use 80% of the shield for the bounding box and a standard center point
+        const t = this.calculateChargePosition(chargeData, {x:500, y:500}, {x: 1000*0.8, y: 1200*0.8})
+        const positioned = `<g transform='translate(${t.posX},${t.posY}) scale(${t.scaleX}, ${t.scaleY})'>${chargeData.data}</g>`;
+        // TODO: may want to scale a treatment or fur
+        const tinted = this.applyTincture(charge.tincture, positioned);
+        return tinted;
     }
 
     calculateChargePosition(charge, position, bounds) {
         // position is where we want to place the charge
-        var parser = new DOMParser();
-        var doc = parser.parseFromString(charge, "image/svg+xml");
-        const w = doc.documentElement.width.baseVal.value;
-        const h = doc.documentElement.height.baseVal.value;
+        const w = charge.width;
+        const h = charge.height;
         const scale = {x: bounds.x / w, y: bounds.y / h};
+        // preserve the aspect ratio
         scale.x = scale.y = Math.min (scale.x, scale.y);
         const resized = {w: w * scale.x, h: h * scale.y};
         const midpoint = {x: resized.w / 2, y: resized.h / 2};
@@ -179,9 +187,6 @@ export class ShieldBuilder {
             if (def.sinister)
                 path = def.sinister;
         }
-        // TODO: handle countercharge
-        // a countercharged division cannot be the field itself
-        // but can be overlaid on the field effectively like an ordinary
 
         // normally the tinctures are used as ordered
         let tinctures = division.tinctures;

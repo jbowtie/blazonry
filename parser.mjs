@@ -2,6 +2,10 @@ import { Tinctures } from "./tinctures.mjs";
 import {Objects} from "./objects.mjs";
 import { colors, furs, ordinaries, treatments, divisions, charges, numbers , orientation, counterchanged} from "./tokens.mjs";
 
+// this class turns the input string into a set of instructions (an AST)
+// TODO: create error messages when we don't understand something / syntax error
+// TODO: handle or strip punctuation
+//       commas should be retained as they often seperate objects
 export class BlazonParser {
     #input = "";
     #index = 0;
@@ -10,6 +14,7 @@ export class BlazonParser {
         // fold accents and lowercase
         const blazon = input.normalize("NFD").replace(/\p{Diacritic}/gu, "").toLowerCase();
         this.#input = blazon;
+        // at minimum we must have a field
         const field = this.matchField();
         // now we look for zero or more objects
         const objects = []
@@ -24,6 +29,7 @@ export class BlazonParser {
     }
 
     matchField() {
+        // TODO: handle a quartering
         const d = this.matchDivision();
         if(d != null) {
             return {division: d};
@@ -139,23 +145,25 @@ export class BlazonParser {
         const m = this.matchCategory(ordinaries);
         if(m === null) return null;
         const ord = {type: Objects.ORDINARY, name: m, number: n};
-        // might have some modifiers
+        // possible orientation
         const o = this.matchCategory(orientation);
         if(o) {
             ord.orientation = o;
             // "bar sinister" is really a "bend sinister"
             if (ord.name == "bar" && ord.orientation == "sinister") ord.name = "bend";
         }
+        // TODO: might have some modifiers
         // ie, voided, cotticed, line variation
         // should have a tincture
         const t = this.matchTincture();
         if (t != null)
             ord.tincture = t;
+        // TODO: may be associated charges
         return ord;
     }
 
     matchCharge() {
-        // might have an arrangement/position
+        // TODO: might have an arrangement/position
         // number if any
         const n = this.matchCategory(numbers);
         // prefix if any
@@ -168,7 +176,7 @@ export class BlazonParser {
         const t = this.matchTincture();
         if (t != null)
             charge.tincture = t;
-        //may be associated charges
+        // TODO: may be associated charges
         return charge;
     }
 

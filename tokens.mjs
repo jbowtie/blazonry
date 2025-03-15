@@ -1,3 +1,5 @@
+// regexes for everything we understand currently
+
 export const colors = [
     {regex: /az(ure)?/, val: "azure"},
     {regex: /or/, val: "or"},
@@ -55,13 +57,10 @@ export const ordinaries = [
 export const divisions = [
     {regex: /parted fesse?wise/, val: "per_fess"},
     {regex: /parted palewise/, val: "per_pale"},
-    //{regex: /parted pilewise/, val: "per_pile"},
-    //{regex: /parted chevronwise/, val: "per_chevron"},
     {regex: /parted bendwise/, val: "per_bend"},
     {regex: /parted saltirewise/, val: "per_saltire"},
     {regex: /(?:part(y|ed)\s+)?per pale/, val: "per_pale"},
     {regex: /(?:part(y|ed)\s+)?per fesse?/, val: "per_fess"},
-    //{regex: /(?:part(y|ed)\s+)?per chief/, val: "per_chief"},
     {regex: /(?:part(y|ed)\s+)?per bend/, val: "per_bend"},
     {regex: /(?:part(y|ed)\s+)?per saltire/, val: "per_saltire"},
     {regex: /quarterly quartered/, val: "gyronny"},
@@ -69,11 +68,18 @@ export const divisions = [
     {regex: /barry/, val: "barry"},
     {regex: /bendy/, val: "bendy"},
     {regex: /paly/, val: "paly"},
+    //{regex: /(?:part(y|ed)\s+)?per chief/, val: "per_chief"},
+    //{regex: /parted pilewise/, val: "per_pile"},
+    //{regex: /parted chevronwise/, val: "per_chevron"},
     //{regex: /(?:part(y|ed)\s+)?per chevron/, val: "per_chevron"},
     //{regex: /(?:part(y|ed)\s+)?per pile/, val: "per_pile"},
     //{regex: /(?:part(y|ed)\s+)?per pall/, val: "per_pall"},
 ]
 
+// currently sorted by val
+// seemingly random selection based on what we need for Pendragon 6E appendix
+// charges should probably follow the HERO ontology - https://finto.fi/hero/en/
+// alternatively follow the mostly sensible groupings used by DrawShield
 export const charges = [
     {regex: /ants?/, val: "ant"},
     {regex: /bees?/, val: "bee"},

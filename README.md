@@ -4,8 +4,11 @@ This project contains both a parser that understands the blazonry language (at l
 
 In many regards it is inspired by https://drawshield.net/ - a fully-featured implementation that supports multiple color palettes, shield shapes, achievements and a wide array of charges.
 
-This is a simpler implementation in Javascript intended for use in virtual tabletops or with games like Pendragon 6E - rather than try and support the full range of features possible for a coat of arms, we support just enough to create the variety needed for a game involving European knights.
+This is a simpler implementation in Javascript intended for use in virtual tabletops or with games like [Pendragon](https://www.chaosium.com/pendragon/) - rather than try and support the full range of features possible for a coat of arms, we support just enough to create the variety needed for a game involving European knights.
 
+## Scope
+
+Until a 1.0 release, the focus is being able to generate heater shields matching the "Coat of Arms Generator" found in Appendix B of [Pendragon 6th Edition Core Rulebook](https://www.chaosium.com/pendragon-core-rulebook-pdf/), with additional elements from the [DrawShield reference poster](https://drawshield.net/resources/poster.html).
 
 ## Usage
 
