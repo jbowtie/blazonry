@@ -1,4 +1,4 @@
-// We can use SVGO to pre-process any files we adopt from DrawSVG
+// We can use SVGO to pre-process any files we adopt from other sources
 // important not to lose any license information embedded in said files
 module.exports = {
   js2svg: { indent: 2, pretty: true },
