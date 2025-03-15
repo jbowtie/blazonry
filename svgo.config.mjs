@@ -1,11 +1,15 @@
 // We can use SVGO to pre-process any files we adopt from other sources
 // important not to lose any license information embedded in said files
-module.exports = {
+import {removeEditorDataPlugin} from "./svgo.removeEditorData.mjs";
+
+export default {
   js2svg: { indent: 2, pretty: true },
   plugins: [
     "removeDoctype",
     "removeXMLProcInst",
     "removeComments",
+    removeEditorDataPlugin,
+    {name: "inlineStyles", params:{onlyMatchedOnce: false}},
     "convertStyleToAttrs",
     "cleanupAttrs",
     "cleanupIds",

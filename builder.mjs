@@ -42,14 +42,19 @@ export class ShieldBuilder {
         //  we want to aggregate metadata in resulting SVG
         var parser = new DOMParser();
         var doc = parser.parseFromString(data, "image/svg+xml");
-        // get the width and height
-        // TODO: work out the w/h from the viewBox (see ant)
-        // TODO:   important when viewbox is offset (see gorgon head)
-        // TODO:   if w/h in percent make it % of viewbox
-        const w = doc.documentElement.width.baseVal.value;
-        const h = doc.documentElement.height.baseVal.value;
+        const root = doc.documentElement;
+        // if the viewbox does not start at 0,0 we will have to compensate
+        // SVG will calculate for us from viewbox percentages, etc
+        const w = root.width.baseVal.value;
+        const h = root.height.baseVal.value;
         // discard the SVG element, we only want the children
-        const children = doc.documentElement.innerHTML;
+        let children = root.innerHTML;
+        const viewbox = root.viewBox.baseVal;
+        if(viewbox && (viewbox.x != 0 || viewbox.y != 0))
+        {
+            const offset = {x: -viewbox.x, y: -viewbox.y};
+            children = `<g transform="translate(${offset.x},${offset.y})">${children}</g>`
+        }
         return {data: children, width: w, height: h}
     }
 

@@ -81,8 +81,9 @@ export const divisions = [
 // charges should probably follow the HERO ontology - https://finto.fi/hero/en/
 // alternatively follow the mostly sensible groupings used by DrawShield
 export const charges = [
+    // TODO: figure out why the parser never matches ant
     {regex: /ants?/, val: "ant"},
-    {regex: /bees?/, val: "bee"},
+    {regex: /bees?/, val: "ant"},
     {regex: /(sanglier|boar|grice)s?/, val: "boar"},
     {regex: /dragons?/, val: "dragon"},
     {regex: /eagles?/, val: "eagle"},
